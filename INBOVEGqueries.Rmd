@@ -1,0 +1,93 @@
+---
+title: "InboVeg queries"
+author: "Els De Bie"
+date: "11 februari 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# packages and connection
+
+nexst packages are needed to run this code
+* knitr
+* tidyverse
+* DBI
+
+Be sure you have reading-rights for CYDONIA
+otherwise place ICTcall
+
+
+```{r}
+
+library(knitr)
+library(tidyverse)
+library(DBI)
+
+con <- dbConnect(odbc::odbc(), dsn = "Cydonia-prd") 
+
+```
+
+
+# Headerinfo
+hier blabal uitleg
+hoe met parameters werken?
+
+
+
+
+
+```{r, include=FALSE}
+
+header_info <- function(RecordingGivid) {
+  dbGetQuery(con,
+    "SELECT 
+      ivR.[RecordingGivid]
+      , ivS.Name
+      , ivR.UserReference
+      , ivR.LocationCode
+      , ivR.Latitude
+      , ivR.Longitude
+      , ivR.Area
+      , ivR.Length
+      , ivR.Width
+      , ivR.SurveyId
+      , coalesce(area, convert( nvarchar(20),ivR.Length * ivR.Width)) as B
+      FROM [dbo].[ivRecording] ivR
+      INNER JOIN [dbo].[ivSurvey] ivS on ivS.Id = ivR.SurveyId
+      where ivR.NeedsWork = 0
+      
+      
+      ;")
+}
+
+# AND ivR.[RecordingGivid] = 'IV2012080710541034'
+headerRec <- for (RecordingGivid in 'IV2012080710541034') {
+  
+  header_info(RecordingGivid = 'IV2012080710541034' )
+}
+
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
